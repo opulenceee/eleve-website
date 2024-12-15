@@ -9,6 +9,10 @@ const ContactPage = () => {
   const { isDark } = useTheme();
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [userType, setUserType] = useState("client");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -27,6 +31,7 @@ const ContactPage = () => {
       ...prev,
       [name]: type === "file" ? files[0] : value,
     }));
+    if (submitError) setSubmitError(null);
   };
 
   const inputStyles = `w-full px-6 py-4 bg-transparent border ${
@@ -39,15 +44,67 @@ const ContactPage = () => {
     isDark
       ? "bg-[#9C6B98] text-white hover:bg-[#4A1259]"
       : "bg-[#2E1437] text-white hover:bg-[#4A1259]"
-  }`;
+  } disabled:opacity-50 disabled:cursor-not-allowed`;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!agreeToTerms) {
-      alert("You must confirm your age and agree to the privacy policy.");
+      setSubmitError(
+        "You must confirm your age and agree to the privacy policy."
+      );
       return;
     }
-    // Add your form submission logic here
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
+    try {
+      const formDataToSend = new FormData();
+
+      // Add all form data
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null && value !== "") {
+          formDataToSend.append(key, value);
+        }
+      });
+
+      // Add user type
+      formDataToSend.append(
+        "userType",
+        userType === "performer" ? "Model" : userType
+      );
+
+      const response = await fetch("https://eleve.space/submit-form", {
+        method: "POST",
+        body: formDataToSend,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitSuccess(true);
+        setFormData({
+          name: "",
+          phone: "",
+          venueName: "",
+          age: "",
+          facebrowser: "",
+          measurements: "",
+          message: "",
+          attachment: null,
+          workType: "",
+        });
+        setAgreeToTerms(false);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        throw new Error(result.message || "Failed to submit form");
+      }
+    } catch (error) {
+      setSubmitError(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -72,9 +129,34 @@ const ContactPage = () => {
               <div className="w-24 h-[1px] bg-[#9C6B98] mx-auto" />
             </motion.div>
 
-            <form onSubmit={handleSubmit}>
+            <AnimatePresence>
+              {submitSuccess && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="p-4 border border-[#9C6B98] mb-8 text-center"
+                >
+                  <p className="text-[#9C6B98] font-medium">
+                    Thank you for your submission! We'll be in touch soon.
+                  </p>
+                </motion.div>
+              )}
+
+              {submitError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="p-4 border border-red-500/20 mb-8 text-center"
+                >
+                  <p className="text-red-400">{submitError}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <form onSubmit={handleSubmit} encType="multipart/form-data">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                {/* Left Column - Form */}
                 <motion.div
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -95,6 +177,7 @@ const ContactPage = () => {
                         onClick={() => setUserType(type)}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
+                        disabled={isSubmitting}
                       >
                         I'm a {type.charAt(0).toUpperCase() + type.slice(1)}
                       </motion.button>
@@ -110,7 +193,6 @@ const ContactPage = () => {
                       className="space-y-6"
                     >
                       {userType === "client" ? (
-                        // Client Fields
                         <>
                           <input
                             type="text"
@@ -120,6 +202,7 @@ const ContactPage = () => {
                             onChange={handleInputChange}
                             required
                             className={inputStyles}
+                            disabled={isSubmitting}
                           />
                           <input
                             type="tel"
@@ -129,6 +212,7 @@ const ContactPage = () => {
                             onChange={handleInputChange}
                             required
                             className={inputStyles}
+                            disabled={isSubmitting}
                           />
                           <input
                             type="text"
@@ -138,10 +222,10 @@ const ContactPage = () => {
                             onChange={handleInputChange}
                             required
                             className={inputStyles}
+                            disabled={isSubmitting}
                           />
                         </>
                       ) : (
-                        // Performer Fields
                         <>
                           <div className="grid grid-cols-2 gap-6">
                             <input
@@ -152,15 +236,19 @@ const ContactPage = () => {
                               onChange={handleInputChange}
                               required
                               className={inputStyles}
+                              disabled={isSubmitting}
                             />
                             <input
                               type="number"
                               name="age"
+                              min="18"
+                              max="100"
                               placeholder="Age"
                               value={formData.age}
                               onChange={handleInputChange}
                               required
                               className={inputStyles}
+                              disabled={isSubmitting}
                             />
                           </div>
 
@@ -172,6 +260,7 @@ const ContactPage = () => {
                             onChange={handleInputChange}
                             required
                             className={inputStyles}
+                            disabled={isSubmitting}
                           />
 
                           <input
@@ -182,7 +271,30 @@ const ContactPage = () => {
                             onChange={handleInputChange}
                             required
                             className={inputStyles}
+                            disabled={isSubmitting}
                           />
+
+                          <div className="space-y-1">
+                            <input
+                              type="text"
+                              name="measurements"
+                              placeholder="Measurements"
+                              value={formData.measurements}
+                              onChange={handleInputChange}
+                              required
+                              className={inputStyles}
+                              disabled={isSubmitting}
+                            />
+                            <p
+                              className={`text-sm ${
+                                isDark
+                                  ? "text-[#E5D4E7]/60"
+                                  : "text-[#2E1437]/60"
+                              }`}
+                            >
+                              Format: Bust-Waist-Hips (e.g., 32C-23-35)
+                            </p>
+                          </div>
 
                           <div className="grid grid-cols-2 gap-4">
                             {[
@@ -220,20 +332,32 @@ const ContactPage = () => {
                                 }`}
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
+                                disabled={isSubmitting}
                               >
                                 {option.label}
                               </motion.button>
                             ))}
                           </div>
 
-                          <input
-                            type="file"
-                            name="attachment"
-                            onChange={handleInputChange}
-                            required
-                            accept=".jpg,.jpeg,.png,.gif"
-                            className={inputStyles}
-                          />
+                          <div className="space-y-1">
+                            <input
+                              type="file"
+                              name="attachment"
+                              onChange={handleInputChange}
+                              accept=".jpg,.jpeg,.png,.gif"
+                              className={inputStyles}
+                              disabled={isSubmitting}
+                            />
+                            <p
+                              className={`text-sm ${
+                                isDark
+                                  ? "text-[#E5D4E7]/60"
+                                  : "text-[#2E1437]/60"
+                              }`}
+                            >
+                              Please add a recent selfie
+                            </p>
+                          </div>
                         </>
                       )}
                     </motion.div>
@@ -247,6 +371,7 @@ const ContactPage = () => {
                       onChange={(e) => setAgreeToTerms(e.target.checked)}
                       required
                       className="mt-1"
+                      disabled={isSubmitting}
                     />
                     <label htmlFor="terms-checkbox" className="text-sm">
                       I confirm that I am at least 18 years old (( IC and OOC ))
@@ -265,12 +390,24 @@ const ContactPage = () => {
                     className={buttonStyles}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    disabled={isSubmitting}
                   >
-                    Submit
+                    {isSubmitting ? (
+                      <span className="flex items-center justify-center">
+                        <span className="mr-2">Submitting</span>
+                        <motion.span
+                          animate={{ opacity: [1, 0.5, 1] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          ...
+                        </motion.span>
+                      </span>
+                    ) : (
+                      "Submit"
+                    )}
                   </motion.button>
                 </motion.div>
 
-                {/* Right Column - Info */}
                 <motion.div
                   initial={{ opacity: 0, x: 30 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -393,7 +530,6 @@ const ContactPage = () => {
       <footer className="bg-[#2E1437] text-white py-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-            {/* Logo Column */}
             <div>
               <h3 className="text-3xl font-cormorant font-bold mb-6">
                 <span className="text-white">ELEVE</span>
@@ -404,14 +540,12 @@ const ContactPage = () => {
               </p>
             </div>
 
-            {/* Contact Column */}
             <div>
               <h4 className="text-[#9C6B98] font-bold mb-4">Contact</h4>
               <p className="text-[#E5D4E7]">📞 48030894</p>
               <p className="text-[#E5D4E7]">📍 Vinewood, Los Santos</p>
             </div>
 
-            {/* Legal Column */}
             <div>
               <h4 className="text-[#9C6B98] font-bold mb-4">Legal</h4>
               <div className="space-y-2">
@@ -429,8 +563,6 @@ const ContactPage = () => {
                 </Link>
               </div>
             </div>
-
-            {/* Social Column */}
             <div>
               <h4 className="text-[#9C6B98] font-bold mb-4">Social</h4>
 
@@ -444,8 +576,6 @@ const ContactPage = () => {
               </a>
             </div>
           </div>
-
-          {/* Copyright Section */}
           <div className="border-t border-[#9C6B98]/20 mt-16 pt-8 text-center text-[#E5D4E7]/60">
             <p className="mb-4">
               Copyright © {new Date().getFullYear()} EleveNoir Entertainment

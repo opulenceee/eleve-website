@@ -15,7 +15,7 @@ const LegalPageLayout = ({ title, children }) => {
       <Navigation />
 
       {/* Hero Section */}
-      <div className="relative min-h-[40vh] flex items-center justify-center mt-24">
+      <div className="relative min-h-[40vh] flex items-center justify-center">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-[#2E1437]/80 to-transparent" />
         </div>

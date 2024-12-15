@@ -35,9 +35,13 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def format_model_embed(data):
+    # Check if attachment exists
+    has_image = data.get("attachment") is not None
+    image_status = "✅ Image Attached" if has_image else "❌ No Image"
+    
     return {
         "embeds": [{
-            "title": "🎭 New Model Application",
+            "title": "🍑 New Model Application",
             "description": "A new model has submitted an application!",
             "color": 38655,
             "fields": [
@@ -46,7 +50,8 @@ def format_model_embed(data):
                 {"name": "Phone", "value": data.get("phone", "N/A"), "inline": True},
                 {"name": "Work Type", "value": data.get("workType", "N/A"), "inline": True},
                 {"name": "Facebrowser", "value": data.get("facebrowser", "N/A"), "inline": True},
-                {"name": "Measurements", "value": data.get("measurements", "N/A"), "inline": True}
+                {"name": "Measurements", "value": data.get("measurements", "N/A"), "inline": True},
+                {"name": "Image", "value": image_status, "inline": True}
             ],
             "footer": {"text": "Elevé Model Management"},
             "timestamp": datetime.now(timezone.utc).isoformat()
@@ -61,7 +66,7 @@ def format_client_embed(data):
             "color": 38655,
             "fields": [
                 {"name": "Name", "value": data.get("name", "N/A"), "inline": True},
-                {"name": "Company", "value": data.get("company", "N/A"), "inline": True},
+                {"name": "Company", "value": data.get("venueName", "N/A"), "inline": True},  # Changed from company to venueName
                 {"name": "Phone", "value": data.get("phone", "N/A"), "inline": True}
             ],
             "footer": {"text": "Elevé Model Management"},
@@ -88,10 +93,11 @@ def format_contract_embed(data):
 @app.route('/submit-form', methods=['POST'])
 def submit_form():
     try:
-        data = request.form.to_dict()  # Using form to handle file uploads
+        data = request.form.to_dict()
         submission_type = data.get("submissionType", "")
         timestamp = datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
 
+        # Make image optional
         if 'attachment' in request.files:
             file = request.files['attachment']
             if file and allowed_file(file.filename):

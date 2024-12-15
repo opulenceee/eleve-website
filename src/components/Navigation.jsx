@@ -9,8 +9,10 @@ const Navigation = () => {
   const navigate = useNavigate();
   const isHome = location.pathname === "/";
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const scrollToSection = (sectionId) => {
+    setIsMenuOpen(false); // Close mobile menu when navigating
     if (!isHome) {
       navigate("/");
       setTimeout(() => {
@@ -35,10 +37,10 @@ const Navigation = () => {
       transition={{ duration: 0.6 }}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center h-24">
+        <div className="flex items-center justify-between h-24">
           {/* Logo */}
           <motion.div
-            className="text-3xl font-cormorant font-bold cursor-pointer tracking-wider w-1/4"
+            className="text-3xl font-cormorant font-bold cursor-pointer tracking-wider"
             onClick={() => navigate("/")}
             whileHover={{ scale: 1.05 }}
           >
@@ -48,9 +50,42 @@ const Navigation = () => {
             <span className="text-[#9C6B98]">NOIR</span>
           </motion.div>
 
-          {/* Centered Navigation */}
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2"
+          >
+            <motion.svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className={isDark ? "text-[#E5D4E7]" : "text-[#2E1437]"}
+            >
+              {isMenuOpen ? (
+                <path
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  d="M18 6L6 18M6 6l12 12"
+                />
+              ) : (
+                <>
+                  <path
+                    strokeWidth="2"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </>
+              )}
+            </motion.svg>
+          </button>
+
+          {/* Desktop Navigation */}
           {isHome && (
-            <nav className="hidden md:flex items-center justify-center flex-grow">
+            <nav className="hidden md:flex items-center justify-center">
               {["partnerships", "services", "performers"].map((item) => (
                 <motion.div
                   key={item}
@@ -83,8 +118,8 @@ const Navigation = () => {
             </nav>
           )}
 
-          {/* Right Side Items */}
-          <div className="flex items-center space-x-4 w-1/4 justify-end">
+          {/* Right Side Actions - Desktop */}
+          <div className="hidden md:flex items-center space-x-4">
             {/* Theme Toggle */}
             <motion.button
               onClick={() => setIsDark(!isDark)}
@@ -117,6 +152,55 @@ const Navigation = () => {
             </motion.button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden border-t border-[#9C6B98]/20"
+            >
+              {isHome && (
+                <div className="py-4 space-y-4">
+                  {["partnerships", "services", "performers"].map((item) => (
+                    <motion.button
+                      key={item}
+                      onClick={() => scrollToSection(item)}
+                      className={`block w-full text-left px-4 py-2 ${
+                        isDark ? "text-[#E5D4E7]" : "text-[#2E1437]"
+                      }`}
+                      whileHover={{ x: 10 }}
+                    >
+                      {item.charAt(0).toUpperCase() + item.slice(1)}
+                    </motion.button>
+                  ))}
+                </div>
+              )}
+              <div className="flex items-center justify-between p-4 border-t border-[#9C6B98]/20">
+                <motion.button
+                  onClick={() => setIsDark(!isDark)}
+                  className={`p-2 border border-[#9C6B98]/20 rounded-full ${
+                    isDark ? "text-[#E5D4E7]" : "text-[#2E1437]"
+                  }`}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {isDark ? "🌙" : "☀️"}
+                </motion.button>
+                <motion.button
+                  onClick={() => navigate("/book")}
+                  className={`px-6 py-3 border border-[#9C6B98] ${
+                    isDark ? "text-[#E5D4E7]" : "text-[#2E1437]"
+                  } hover:bg-[#9C6B98] hover:text-white`}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Book Now
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.header>
   );

@@ -54,7 +54,7 @@ const FullPageLayout = () => {
                 <span className="block text-[#9C6B98] mt-2">Entertainment</span>
               </h1>
               <p className="text-2xl font-light leading-relaxed mb-12 text-[#E5D4E7]">
-                Los Santos' premier exotic dance talent agency
+                Los Santos' premier adult entertainment agency
               </p>
               <div className="flex gap-8 justify-center">
                 <Link
@@ -120,8 +120,9 @@ const FullPageLayout = () => {
                     isDark ? "text-[#E5D4E7]" : "text-[#2E1437]/80"
                   }`}
                 >
-                  Elevate your venue with our premium entertainment solutions.
-                  Our performers bring sophistication and energy to every event.
+                  Elevate your experience with our premium entertainment
+                  services. Our team brings sophistication, allure and energy to
+                  every occasion.
                 </p>
                 <Link
                   to="/book"
@@ -138,23 +139,26 @@ const FullPageLayout = () => {
                 {[
                   {
                     title: "Club Entertainment",
-                    description: "Professional dancers for upscale venues",
-                    icon: "🎭",
+                    description:
+                      "Professional dancers and escorts for upscale venues",
+                    icon: "🍑",
                   },
                   {
-                    title: "Private Events",
+                    title: "Private & Exclusive Events",
                     description: "Exclusive performances for select gatherings",
-                    icon: "✨",
+                    icon: "💋",
                   },
                   {
-                    title: "Corporate Events",
-                    description: "Sophisticated entertainment solutions",
+                    title: "High-Class Entertainment",
+                    description:
+                      "Luxury entertainment and escort services for refined occasions",
                     icon: "⭐",
                   },
                   {
-                    title: "VIP Experience",
-                    description: "Personalized premium services",
-                    icon: "🌟",
+                    title: "VIP Escort Experience",
+                    description:
+                      "Personalized, high-end escort and dance services",
+                    icon: "💎",
                   },
                 ].map((service, index) => (
                   <motion.div
@@ -201,16 +205,16 @@ const FullPageLayout = () => {
             className="text-center mb-20"
           >
             <h2 className="text-6xl font-cormorant font-bold mb-6">
-              Featured <span className="text-[#9C6B98]">Performers</span>
+              Featured <span className="text-[#9C6B98]">Talents</span>
             </h2>
             <div className="w-24 h-[1px] bg-[#9C6B98] mx-auto" />
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
             {[
-              { name: "Aria", specialty: "Contemporary", img: model3 },
-              { name: "Luna", specialty: "Aerial Arts", img: model4 },
-              { name: "Phoenix", specialty: "Fire Performance", img: model5 },
+              { name: "Aria", img: model3 },
+              { name: "Luna", img: model4 },
+              { name: "Phoenix", img: model5 },
             ].map((performer, index) => (
               <motion.div
                 key={performer.name}
@@ -231,9 +235,6 @@ const FullPageLayout = () => {
                     <h3 className="text-3xl font-cormorant font-bold text-white mb-2">
                       {performer.name}
                     </h3>
-                    <p className="text-[#9C6B98] font-light">
-                      {performer.specialty}
-                    </p>
                   </div>
                 </div>
               </motion.div>
