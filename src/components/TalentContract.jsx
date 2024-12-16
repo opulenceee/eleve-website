@@ -279,7 +279,7 @@ const TalentContract = () => {
             </div>
             <div>
               <h4 className="text-[#9C6B98] font-bold mb-4">Contact</h4>
-              <p className="text-[#E5D4E7]">📞 48030894</p>
+              <p className="text-[#E5D4E7]">📞 51100</p>
               <p className="text-[#E5D4E7]">📍 Vinewood, Los Santos</p>
             </div>
             <div>

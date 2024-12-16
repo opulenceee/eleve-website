@@ -12,6 +12,15 @@ import PartnershipSection from "../components/PartnershipSection";
 import FAQ from "./FAQ";
 
 const FullPageLayout = () => {
+  const handleEmail = (e) => {
+    e.preventDefault();
+    window.location.href = "mailto:support@eleve.space";
+  };
+
+  const handleForumPM = (e) => {
+    e.preventDefault();
+    window.open("https://forum.gta.world/en/profile/78653-boombatz/", "_blank");
+  };
   const { isDark } = useTheme();
   const [hoveredService, setHoveredService] = useState(null);
 
@@ -260,7 +269,7 @@ const FullPageLayout = () => {
             </div>
             <div>
               <h4 className="text-[#9C6B98] font-bold mb-4">Contact</h4>
-              <p className="text-[#E5D4E7]">📞 48030894</p>
+              <p className="text-[#E5D4E7]">📞 51100</p>
               <p className="text-[#E5D4E7]">📍 Vinewood, Los Santos</p>
             </div>
             <div>
@@ -282,14 +291,30 @@ const FullPageLayout = () => {
             </div>
             <div>
               <h4 className="text-[#9C6B98] font-bold mb-4">Social</h4>
-              <a
-                href="https://face.gta.world/pages/eleve"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block text-[#E5D4E7] hover:text-[#9C6B98] transition-colors"
-              >
-                👍 Facebrowser
-              </a>
+              <div className="flex flex-col space-y-2">
+                <a
+                  href="https://face.gta.world/pages/eleve"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-[#E5D4E7] hover:text-[#9C6B98] transition-colors"
+                >
+                  👍 Facebrowser
+                </a>
+                <a
+                  href="#"
+                  onClick={handleEmail}
+                  className="inline-block text-[#E5D4E7] hover:text-[#9C6B98] transition-colors"
+                >
+                  ✉️ Email Us
+                </a>
+                <a
+                  href="#"
+                  onClick={handleForumPM}
+                  className="inline-block text-[#E5D4E7] hover:text-[#9C6B98] transition-colors"
+                >
+                  💬 Send PM
+                </a>
+              </div>
             </div>
           </div>
           <div className="border-t border-[#9C6B98]/20 mt-16 pt-8 text-center text-[#E5D4E7]/60">
