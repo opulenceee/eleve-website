@@ -18,11 +18,6 @@ const ContactPage = () => {
     window.location.href = "mailto:support@eleve.space";
   };
 
-  const handleForumPM = (e) => {
-    e.preventDefault();
-    window.open("https://forum.gta.world/en/profile/78653-boombatz/", "_blank");
-  };
-
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -590,13 +585,6 @@ const ContactPage = () => {
                   className="inline-block text-[#E5D4E7] hover:text-[#9C6B98] transition-colors"
                 >
                   ✉️ Email Us
-                </a>
-                <a
-                  href="#"
-                  onClick={handleForumPM}
-                  className="inline-block text-[#E5D4E7] hover:text-[#9C6B98] transition-colors"
-                >
-                  💬 Send PM
                 </a>
               </div>
             </div>
