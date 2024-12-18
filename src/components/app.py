@@ -17,6 +17,9 @@ logging.basicConfig(
 app = Flask(__name__)
 CORS(app, origins=['https://eleve.space'])
 
+# Configure maximum file size (50MB)
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
+
 MODEL_WEBHOOK_URL = os.getenv("MODEL_WEBHOOK_URL")
 CLIENT_WEBHOOK_URL = os.getenv("CLIENT_WEBHOOK_URL")
 CONTRACT_WEBHOOK_URL = os.getenv("CONTRACT_WEBHOOK_URL")
@@ -25,6 +28,8 @@ UPLOAD_FOLDER = 'uploads'
 SUBMISSIONS_DIR = "submissions"
 CONTRACTS_DIR = "contracts"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB in bytes
+
 
 # Create directories and set permissions
 for dir in [UPLOAD_FOLDER, SUBMISSIONS_DIR, CONTRACTS_DIR]:
@@ -33,6 +38,12 @@ for dir in [UPLOAD_FOLDER, SUBMISSIONS_DIR, CONTRACTS_DIR]:
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def check_file_size(file):
+    file.seek(0, os.SEEK_END)
+    size = file.tell()
+    file.seek(0)
+    return size <= MAX_FILE_SIZE
 
 def format_model_embed(data):
     # Check if attachment exists
@@ -66,7 +77,7 @@ def format_client_embed(data):
             "color": 38655,
             "fields": [
                 {"name": "Name", "value": data.get("name", "N/A"), "inline": True},
-                {"name": "Company", "value": data.get("venueName", "N/A"), "inline": True},  # Changed from company to venueName
+                {"name": "Company", "value": data.get("venueName", "N/A"), "inline": True},
                 {"name": "Phone", "value": data.get("phone", "N/A"), "inline": True}
             ],
             "footer": {"text": "Elevé Model Management"},
@@ -101,12 +112,17 @@ def submit_form():
         if 'attachment' in request.files:
             file = request.files['attachment']
             if file and allowed_file(file.filename):
+                if not check_file_size(file):
+                    return jsonify({
+                        "message": "File size exceeds maximum limit of 16MB.",
+                        "status": "error"
+                    }), 413
                 filename = secure_filename(file.filename)
                 file_path = os.path.join(UPLOAD_FOLDER, f"{filename}_{timestamp}")
                 file.save(file_path)
                 data["attachment"] = file_path
             else:
-                return jsonify({"message": "Invalid file type."}), 400
+                return jsonify({"message": "Invalid file type.", "status": "error"}), 400
         else:
             data["attachment"] = None
 
@@ -119,7 +135,7 @@ def submit_form():
             user_type = data.get("userType", "").capitalize()
             if user_type not in ["Client", "Model"]:
                 logging.error(f"Invalid user type specified: {user_type}")
-                return jsonify({"message": "Invalid user type specified."}), 400
+                return jsonify({"message": "Invalid user type specified.", "status": "error"}), 400
                 
             name = secure_filename(data.get("name", "unknown"))
             file_path = os.path.join(SUBMISSIONS_DIR, f"{name}_{timestamp}.json")

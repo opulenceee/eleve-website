@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import LegalPageLayout from "./LegalPageLayout";
+import { Helmet } from "react-helmet-async";
 
 const PrivacyPolicy = () => {
   const sections = [
@@ -75,34 +76,41 @@ const PrivacyPolicy = () => {
   ];
 
   return (
-    <LegalPageLayout title="Privacy Policy">
-      {sections.map((section, index) => (
-        <motion.section
-          key={index}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 + index * 0.1 }}
-          className={`p-8 border transition-all duration-300 hover:border-[#9C6B98] ${"border-[#9C6B98]/20"}`}
-        >
-          <h2 className="text-2xl font-cormorant font-bold mb-6 text-[#9C6B98]">
-            {section.title}
-          </h2>
-          {section.content.map((paragraph, pIndex) => (
-            <div key={pIndex} className="mb-4">
-              {Array.isArray(paragraph) ? (
-                <ul className="list-disc pl-6 space-y-2 text-[#E5D4E7]/80">
-                  {paragraph.map((item, iIndex) => (
-                    <li key={iIndex}>{item}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-[#E5D4E7]/80 leading-relaxed">{paragraph}</p>
-              )}
-            </div>
-          ))}
-        </motion.section>
-      ))}
-    </LegalPageLayout>
+    <>
+      <Helmet>
+        <title>Privacy Policy | EleveNoir Entertainment</title>
+      </Helmet>
+      <LegalPageLayout title="Privacy Policy">
+        {sections.map((section, index) => (
+          <motion.section
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 + index * 0.1 }}
+            className={`p-8 border transition-all duration-300 hover:border-[#9C6B98] ${"border-[#9C6B98]/20"}`}
+          >
+            <h2 className="text-2xl font-cormorant font-bold mb-6 text-[#9C6B98]">
+              {section.title}
+            </h2>
+            {section.content.map((paragraph, pIndex) => (
+              <div key={pIndex} className="mb-4">
+                {Array.isArray(paragraph) ? (
+                  <ul className="list-disc pl-6 space-y-2 text-[#E5D4E7]/80">
+                    {paragraph.map((item, iIndex) => (
+                      <li key={iIndex}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-[#E5D4E7]/80 leading-relaxed">
+                    {paragraph}
+                  </p>
+                )}
+              </div>
+            ))}
+          </motion.section>
+        ))}
+      </LegalPageLayout>
+    </>
   );
 };
 

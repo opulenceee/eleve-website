@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import logo from "../assets/images/logo.png";
 
 const Navigation = () => {
   const { isDark, setIsDark } = useTheme();
@@ -37,17 +38,21 @@ const Navigation = () => {
       transition={{ duration: 0.6 }}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-24">
-          {/* Logo */}
+        <div className="flex items-center h-24">
+          {/* Logo - Now with a fixed width */}
           <motion.div
-            className="text-3xl font-cormorant font-bold cursor-pointer tracking-wider"
-            onClick={() => navigate("/")}
+            className="cursor-pointer mt-4 w-52" /* Added fixed width to match logo */
+            onClick={() => {
+              navigate("/");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
             whileHover={{ scale: 1.05 }}
           >
-            <span className={isDark ? "text-[#E5D4E7]" : "text-[#2E1437]"}>
-              ELEVE
-            </span>
-            <span className="text-[#9C6B98]">NOIR</span>
+            <img
+              src={logo}
+              alt="EleveNoir Logo"
+              className="w-52 h-auto object-contain"
+            />
           </motion.div>
 
           {/* Mobile Menu Button */}
@@ -84,42 +89,44 @@ const Navigation = () => {
           </button>
 
           {/* Desktop Navigation */}
-          {isHome && (
-            <nav className="hidden md:flex items-center justify-center">
-              {["partnerships", "services", "performers"].map((item) => (
-                <motion.div
-                  key={item}
-                  className="relative px-6"
-                  onHoverStart={() => setHoveredItem(item)}
-                  onHoverEnd={() => setHoveredItem(null)}
-                >
-                  <motion.button
-                    onClick={() => scrollToSection(item)}
-                    className={`${
-                      isDark ? "text-[#E5D4E7]" : "text-[#2E1437]"
-                    } transition-colors font-light tracking-wider relative z-10`}
-                    whileHover={{ y: -2 }}
+          <div className="flex-1 flex justify-center">
+            {isHome && (
+              <nav className="hidden md:flex items-center justify-center">
+                {["partnerships", "services", "performers"].map((item) => (
+                  <motion.div
+                    key={item}
+                    className="relative px-6"
+                    onHoverStart={() => setHoveredItem(item)}
+                    onHoverEnd={() => setHoveredItem(null)}
                   >
-                    {item.charAt(0).toUpperCase() + item.slice(1)}
-                  </motion.button>
-                  <AnimatePresence>
-                    {hoveredItem === item && (
-                      <motion.div
-                        className="absolute -bottom-2 left-0 right-0 h-[1px] bg-[#9C6B98] mx-6"
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        exit={{ scaleX: 0 }}
-                        transition={{ duration: 0.2 }}
-                      />
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ))}
-            </nav>
-          )}
+                    <motion.button
+                      onClick={() => scrollToSection(item)}
+                      className={`${
+                        isDark ? "text-[#E5D4E7]" : "text-[#2E1437]"
+                      } transition-colors font-light tracking-wider relative z-10`}
+                      whileHover={{ y: -2 }}
+                    >
+                      {item.charAt(0).toUpperCase() + item.slice(1)}
+                    </motion.button>
+                    <AnimatePresence>
+                      {hoveredItem === item && (
+                        <motion.div
+                          className="absolute -bottom-2 left-0 right-0 h-[1px] bg-[#9C6B98] mx-6"
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          exit={{ scaleX: 0 }}
+                          transition={{ duration: 0.2 }}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                ))}
+              </nav>
+            )}
+          </div>
 
           {/* Right Side Actions - Desktop */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4 w-52 justify-end">
             {/* Theme Toggle */}
             <motion.button
               onClick={() => setIsDark(!isDark)}

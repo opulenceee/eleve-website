@@ -113,7 +113,7 @@ const FAQ = ({ isDark, isCompact = false }) => {
             className="text-center mt-8"
           >
             <Link
-              to="/book"
+              to="/book#faq-section" // Changed from "/book" to "/book#faq-section"
               className="inline-block px-8 py-4 border border-[#9C6B98] text-[#9C6B98] hover:bg-[#9C6B98] hover:text-white transition-all duration-300"
             >
               View All FAQs
